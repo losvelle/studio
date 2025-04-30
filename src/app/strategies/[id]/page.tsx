@@ -7,16 +7,18 @@ import { getStrategyById, type TradingStrategy } from '@/services/strategies';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, TrendingUp, Percent, Gauge, BarChartBig, Tag, Info, Layers, BookOpen } from 'lucide-react'; // Import icons
+import { ArrowLeft, TrendingUp, Percent, Gauge, BarChartBig, Tag, Info, Layers, BookOpen, FilePenLine } from 'lucide-react'; // Added FilePenLine icon
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 export default function StrategyDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const strategyId = params.id as string; // Assuming id is always a string
+  const { toast } = useToast(); // Initialize toast
 
   const [strategy, setStrategy] = useState<TradingStrategy | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,6 +52,17 @@ export default function StrategyDetailsPage() {
     fetchStrategy();
   }, [strategyId]);
 
+  const handleEditLogicClick = () => {
+      // Placeholder for future functionality
+      console.log('Edit Strategy Logic clicked for:', strategyId);
+      toast({
+          title: "Feature Not Implemented",
+          description: "Editing strategy logic directly is not yet available.",
+          variant: "default", // Use default or a specific variant if you add one for info
+      });
+  };
+
+
   if (loading) {
     return <StrategyDetailsSkeleton />;
   }
@@ -82,12 +95,15 @@ export default function StrategyDetailsPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-3xl">
-      {/* Header with Back Button */}
-       <div className="mb-6 flex items-center justify-between">
+      {/* Header with Back Button & Edit Logic Button */}
+       <div className="mb-6 flex items-center justify-between gap-4">
          <Button variant="outline" size="sm" onClick={() => router.back()}>
            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Strategies
          </Button>
-          {/* Optional: Placeholder for admin edit button */}
+          {/* Button to Edit Strategy Logic (Placeholder) */}
+           <Button variant="secondary" size="sm" onClick={handleEditLogicClick}>
+                <FilePenLine className="mr-2 h-4 w-4" /> Edit Strategy Logic
+            </Button>
        </div>
 
       <Card className="shadow-lg w-full">
@@ -166,10 +182,10 @@ export default function StrategyDetailsPage() {
          </CardContent>
 
          {/* Optional Footer */}
-         {/* <Separator className="my-4" />
+          <Separator className="my-4" />
          <CardFooter className="pt-4">
             <p className="text-xs text-muted-foreground">Performance metrics based on historical backtesting data.</p>
-         </CardFooter> */}
+         </CardFooter>
       </Card>
     </div>
   );
@@ -182,6 +198,7 @@ function StrategyDetailsSkeleton() {
     <div className="container mx-auto py-8 px-4 max-w-3xl">
         <div className="mb-6 flex items-center justify-between">
              <Skeleton className="h-9 w-40" />
+             <Skeleton className="h-9 w-44" /> {/* Skeleton for the edit logic button */}
         </div>
         <Card className="shadow-lg w-full">
             <CardHeader className="pb-4 border-b">
@@ -209,12 +226,12 @@ function StrategyDetailsSkeleton() {
                       <Skeleton className="h-16 w-full rounded-md" />
                   </div>
             </CardContent>
-             {/* Optional Footer Skeleton */}
-             {/* <Separator className="my-4" />
+             <Separator className="my-4" />
              <CardFooter className="pt-4">
                   <Skeleton className="h-3 w-1/3" />
-             </CardFooter> */}
+             </CardFooter>
         </Card>
     </div>
   );
 }
+
