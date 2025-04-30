@@ -15,9 +15,13 @@ export interface TradingSignal {
    */
   entryPrice: number;
   /**
-   * The exit price or rule for the trade.
+   * The stop loss price for the trade.
    */
-  exitPrice: number | string;
+  stopLoss: number; // Renamed from exitPrice
+  /**
+   * The target price for the trade.
+   */
+  targetPrice: number; // Added targetPrice property
   /**
    * The name or ID of the strategy that triggered the signal.
    */
@@ -56,20 +60,32 @@ export async function getTradingSignals(): Promise<TradingSignal[]> {
   const mockSignals: TradingSignal[] = Array.from({ length: 25 }, (_, i) => {
     const direction = Math.random() > 0.5 ? 'Buy' : 'Sell';
     const entryPrice = Math.random() * 500 + 50; // Random price between 50 and 550
-    const exitAdjustment = (Math.random() * 10 + 1) * (direction === 'Buy' ? 1 : -1); // Adjust exit based on direction
-    const exitPrice = entryPrice + exitAdjustment;
+    const priceMovementRange = (Math.random() * 20 + 5); // Random movement range between 5 and 25
+
+    let stopLoss: number;
+    let targetPrice: number;
+
+    if (direction === 'Buy') {
+      stopLoss = entryPrice - (priceMovementRange * (Math.random() * 0.4 + 0.3)); // Stop loss is below entry
+      targetPrice = entryPrice + (priceMovementRange * (Math.random() * 0.6 + 0.7)); // Target price is above entry
+    } else { // Sell
+      stopLoss = entryPrice + (priceMovementRange * (Math.random() * 0.4 + 0.3)); // Stop loss is above entry
+      targetPrice = entryPrice - (priceMovementRange * (Math.random() * 0.6 + 0.7)); // Target price is below entry
+    }
+
 
     return {
       asset: assets[i % assets.length],
       direction: direction,
       entryPrice: entryPrice,
-      exitPrice: exitPrice, // Can also be a string like "ATR Trailing Stop"
+      stopLoss: stopLoss,
+      targetPrice: targetPrice,
       strategyId: strategies[i % strategies.length],
       timestamp: getRandomTimestamp(),
-      indicatorValues: {
+      indicatorValues: { // Keep indicator values in data, but won't display in card
         RSI: Math.random() * 100,
         ATR: Math.random() * 5 + 0.5,
-        ...(Math.random() > 0.5 ? { MACD_Signal: Math.random() * 2 - 1 } : {}), // Conditionally add another indicator
+        ...(Math.random() > 0.5 ? { MACD_Signal: Math.random() * 2 - 1 } : {}),
       }
     };
   });

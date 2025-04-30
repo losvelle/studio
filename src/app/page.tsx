@@ -6,13 +6,14 @@ import { Terminal } from "lucide-react";
 import { Separator } from '@/components/ui/separator';
 
 // Mock function to add asset names, replace with actual data source logic
-function addAssetNames(signals: TradingSignal[]): TradingSignal[] {
-  const assets = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'BTC/USD', 'ETH/USD'];
-  return signals.map((signal, index) => ({
-    ...signal,
-    asset: assets[index % assets.length], // Cycle through assets for variety
-  }));
-}
+// No longer needed as asset is part of the core signal data now
+// function addAssetNames(signals: TradingSignal[]): TradingSignal[] {
+//   const assets = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'BTC/USD', 'ETH/USD'];
+//   return signals.map((signal, index) => ({
+//     ...signal,
+//     asset: assets[index % assets.length], // Cycle through assets for variety
+//   }));
+// }
 
 
 export default async function Home() {
@@ -22,16 +23,16 @@ export default async function Home() {
   let error: string | null = null;
 
   try {
-    const fetchedSignals = await getTradingSignals();
-    signals = addAssetNames(fetchedSignals); // Add asset names
+    signals = await getTradingSignals();
+    // signals = addAssetNames(fetchedSignals); // Asset names now come from getTradingSignals
   } catch (e) {
     console.error("Failed to fetch trading signals:", e);
     error = "Could not load trading signals. Please try again later.";
   }
 
   // Separate "real-time" (latest) signals from history
-  // For this example, let's consider the latest 2 signals as "real-time"
-  const realTimeSignals = signals.slice(0, 2);
+  // For this example, let's consider the latest 3 signals as "real-time"
+  const realTimeSignals = signals.slice(0, 3);
   const historicalSignals = signals; // Pass all signals to history component
 
   return (
@@ -48,13 +49,13 @@ export default async function Home() {
        <section className="mb-12">
          <h2 className="text-2xl font-semibold mb-6 text-primary">Real-Time Signals</h2>
          {realTimeSignals.length > 0 ? (
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
              {realTimeSignals.map((signal, index) => (
                <SignalCard key={`realtime-${signal.timestamp}-${index}`} signal={signal} />
              ))}
            </div>
          ) : (
-           <p className="text-muted-foreground">No real-time signals available currently.</p>
+           !error && <p className="text-muted-foreground">No real-time signals available currently.</p> // Show only if no error
          )}
        </section>
 
@@ -68,9 +69,9 @@ export default async function Home() {
   );
 }
 
-// Add asset property to TradingSignal interface
-declare module '@/services/trading-signals' {
-  interface TradingSignal {
-    asset: string; // Add asset property
-  }
-}
+// Remove declaration merging as 'asset' is now part of the base TradingSignal interface
+// declare module '@/services/trading-signals' {
+//   interface TradingSignal {
+//     asset: string; // Add asset property
+//   }
+// }

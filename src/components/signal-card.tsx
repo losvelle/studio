@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpRight, ArrowDownLeft, Clock, Tag, Target, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, Clock, Tag, Target, TrendingDown, Crosshair } from 'lucide-react'; // Import Crosshair and TrendingDown
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -54,31 +54,25 @@ export function SignalCard({ signal }: SignalCardProps) {
            </Badge>
         </div>
       </CardHeader>
-      <CardContent className="pb-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-        <div className="space-y-2">
+      <CardContent className="pb-4 space-y-2 text-sm"> {/* Use simple stacking instead of grid */}
           <div className="flex items-center gap-2">
             <Target className="h-4 w-4 text-primary" />
             <span>Entry Price: <span className="font-semibold">{signal.entryPrice.toFixed(2)}</span></span>
           </div>
+           <div className="flex items-center gap-2">
+             <Crosshair className="h-4 w-4 text-green-600" /> {/* Icon for Target Price */}
+             <span>Target Price: <span className="font-semibold">{signal.targetPrice.toFixed(2)}</span></span>
+           </div>
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-destructive" />
-            <span>Exit Price/Rule: <span className="font-semibold">{typeof signal.exitPrice === 'number' ? signal.exitPrice.toFixed(2) : signal.exitPrice}</span></span>
+            <TrendingDown className="h-4 w-4 text-destructive" /> {/* Icon for Stop Loss */}
+            <span>Stop Loss: <span className="font-semibold">{signal.stopLoss.toFixed(2)}</span></span>
           </div>
-        </div>
-        <div className="space-y-2">
-          <h4 className="font-medium text-muted-foreground">Indicators:</h4>
-          <ul className="list-disc list-inside text-xs space-y-1">
-            {Object.entries(signal.indicatorValues).map(([key, value]) => (
-              <li key={key}>{key}: <span className="font-mono">{value.toFixed(2)}</span></li>
-            ))}
-          </ul>
-        </div>
       </CardContent>
       <CardFooter className="text-xs text-muted-foreground pt-3 border-t">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           {/* Render the formatted timestamp only when the state is updated on the client */}
-          <span>{formattedTimestamp}</span>
+          <span>{formattedTimestamp || 'Loading time...'}</span> {/* Provide fallback text */}
         </div>
       </CardFooter>
     </Card>
