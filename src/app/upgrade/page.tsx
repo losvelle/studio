@@ -95,7 +95,8 @@ export default function UpgradePage() {
         Choose the plan that best fits your trading needs.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
+      {/* Updated grid to display 4 columns horizontally on medium screens and up */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-stretch">
         {plans.map((plan) => (
           <Card
             key={plan.name}
