@@ -25,8 +25,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
+        suppressHydrationWarning // Add suppressHydrationWarning here as error points to body
         className={cn(
           geistSans.variable,
           geistMono.variable,
