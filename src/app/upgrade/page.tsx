@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -162,12 +163,12 @@ export default function UpgradePage() {
             )}
           >
             {/* Reduced vertical padding for shorter height */}
-            <CardHeader className="pt-4 pb-2">
+            <CardHeader className="pt-4 pb-2"> {/* Reduced padding */}
               <CardTitle className="text-xl font-semibold">{trialPlan.name}</CardTitle>
               <CardDescription>{trialPlan.description}</CardDescription>
             </CardHeader>
             {/* Reduced vertical padding and spacing */}
-            <CardContent className="flex-grow space-y-3 py-4">
+            <CardContent className="flex-grow space-y-3 py-4"> {/* Reduced padding & space */}
               <div className="text-3xl font-bold">
                 {trialPlan.price}
               </div>
@@ -181,7 +182,7 @@ export default function UpgradePage() {
               </ul>
             </CardContent>
             {/* Reduced vertical padding */}
-            <CardFooter className="pt-4 pb-4">
+            <CardFooter className="pt-4 pb-4"> {/* Reduced padding */}
               <Button
                 className="w-full"
                 variant='secondary' // Different variant for trial
