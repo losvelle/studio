@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState } from 'react'; // Import useState
+import React, { useState, useEffect } from 'react'; // Import useEffect
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog"; // Import Dialog components
 import { LogOut, CreditCard, Bell, ShieldCheck, Mail, ArrowUpCircle, Edit } from 'lucide-react'; // Added Edit icon
 import { useToast } from '@/hooks/use-toast'; // Import useToast
+import { format } from 'date-fns'; // Import format for consistent date formatting
 
 // Mock user data - replace with actual data fetching
 const initialUser = {
@@ -29,7 +30,7 @@ const initialUser = {
   avatarUrl: "https://picsum.photos/100/100", // Placeholder image
   subscription: {
     plan: "Professional", // Updated plan
-    expiryDate: "2024-12-31",
+    expiryDate: "2024-12-31", // ISO string or consistent format
   },
   notificationPreferences: {
     email: true,
@@ -46,6 +47,24 @@ export default function AccountPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedName, setEditedName] = useState(user.name);
   const [editedEmail, setEditedEmail] = useState(user.email);
+  const [formattedExpiryDate, setFormattedExpiryDate] = useState<string | null>(null); // State for formatted date
+
+
+  // Format expiry date client-side to avoid hydration errors
+  useEffect(() => {
+    try {
+      const date = new Date(user.subscription.expiryDate);
+      if (!isNaN(date.getTime())) {
+        // Use a consistent format like 'PP' (e.g., Dec 31, 2024)
+        setFormattedExpiryDate(format(date, 'PP'));
+      } else {
+        setFormattedExpiryDate('Invalid date');
+      }
+    } catch (error) {
+      console.error("Error formatting expiry date:", error);
+      setFormattedExpiryDate('Error');
+    }
+  }, [user.subscription.expiryDate]); // Re-run if expiryDate changes
 
 
   const handleLogout = () => {
@@ -206,7 +225,8 @@ export default function AccountPage() {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Renews On:</span>
-            <span className="font-semibold">{new Date(user.subscription.expiryDate).toLocaleDateString()}</span>
+            {/* Render the formatted date from state */}
+            <span className="font-semibold">{formattedExpiryDate || 'Loading date...'}</span>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4">
