@@ -147,13 +147,14 @@ export default function StrategyDetailsPage() {
                        </Alert>
                        <p className="text-sm text-muted-foreground">
                            For now, you can imagine fields here to adjust settings like:
-                           <ul className="list-disc list-inside mt-2">
-                               <li>Moving Average Periods</li>
-                               <li>RSI Thresholds</li>
-                               <li>Entry/Exit Conditions</li>
-                               <li>Time Filters</li>
-                           </ul>
                        </p>
+                       {/* Moved ul outside of p tag to fix nesting */}
+                       <ul className="text-sm text-muted-foreground list-disc list-inside mt-2">
+                           <li>Moving Average Periods</li>
+                           <li>RSI Thresholds</li>
+                           <li>Entry/Exit Conditions</li>
+                           <li>Time Filters</li>
+                       </ul>
                        {/* Future: <StrategyLogicForm strategy={strategy} onSubmit={handleSaveLogic} /> */}
                     </div>
                     <DialogFooter>
