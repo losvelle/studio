@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react'; // Import useEffect
+import { useRouter } from 'next/navigation'; // Import useRouter
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,11 +39,12 @@ const initialUser = {
   },
 };
 
-// Define the subscription tiers
+// Define the subscription tiers (ordered)
 const subscriptionTiers = ["Trial", "Starter", "Professional", "Ultimate"];
 
 export default function AccountPage() {
   const { toast } = useToast(); // Initialize toast
+  const router = useRouter(); // Initialize router
   const [user, setUser] = useState(initialUser); // Use state for user data
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedName, setEditedName] = useState(user.name);
@@ -89,13 +91,14 @@ export default function AccountPage() {
   };
 
   const handleUpgradePlan = () => {
-    // TODO: Implement actual upgrade logic (e.g., redirect to pricing/upgrade page)
-    console.log('Upgrade Plan clicked');
-    toast({
-        title: "Upgrade Your Plan",
-        description: "Redirecting to view upgrade options... (Simulation)",
-    });
-    // Example: window.location.href = '/pricing'; // Assuming a pricing page exists
+    // Navigate to the upgrade page
+    router.push('/upgrade');
+    console.log('Upgrade Plan clicked - navigating');
+    // The toast is no longer needed here as we navigate away
+    // toast({
+    //     title: "Upgrade Your Plan",
+    //     description: "Redirecting to view upgrade options...",
+    // });
   };
 
 
@@ -136,7 +139,9 @@ export default function AccountPage() {
       setIsEditModalOpen(true);
   }
 
-  const isHighestTier = user.subscription.plan === "Ultimate";
+  const currentPlanIndex = subscriptionTiers.indexOf(user.subscription.plan);
+  const isHighestTier = currentPlanIndex === subscriptionTiers.length - 1; // Check if current plan is the last in the ordered list
+
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-2xl">
