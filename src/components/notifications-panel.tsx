@@ -48,6 +48,7 @@ export function NotificationsPanel() {
     setNotifications(currentNotifications =>
       currentNotifications.map(n => (n.id === id ? { ...n, read: true } : n))
     );
+    console.log(`Notification ${id} marked as read.`);
     // TODO: Add API call to mark notification as read on the backend
   };
 
@@ -55,11 +56,13 @@ export function NotificationsPanel() {
     setNotifications(currentNotifications =>
       currentNotifications.map(n => ({ ...n, read: true }))
     );
+    console.log('All notifications marked as read.');
      // TODO: Add API call to mark all as read
   };
 
   const clearAllNotifications = () => {
     setNotifications([]);
+    console.log('All notifications cleared.');
      // TODO: Add API call to clear notifications
   };
 
@@ -99,7 +102,7 @@ export function NotificationsPanel() {
                       <div className="flex justify-between items-center mb-1">
                         <h4 className="font-semibold">{notification.title}</h4>
                         {!notification.read && (
-                           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => markAsRead(notification.id)}>
+                           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => markAsRead(notification.id)}> {/* Added onClick handler */}
                                <X className="h-4 w-4 text-muted-foreground" />
                                <span className="sr-only">Mark as read</span>
                            </Button>
