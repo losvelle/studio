@@ -153,23 +153,25 @@ export default function UpgradePage() {
 
       {/* Trial Plan Section */}
       {trialPlan && (
-        <div className="flex justify-center">
+        <div className="mt-12"> {/* Removed flex justify-center, added margin-top */}
           <Card
             key={trialPlan.id}
             className={cn(
-              'flex flex-col shadow-md transition-all duration-300 hover:shadow-lg relative w-full max-w-md', // Centered and max width
+              'flex flex-col shadow-md transition-all duration-300 hover:shadow-lg relative w-full max-w-3xl mx-auto', // Centered and wider max-width
               'border-dashed border-muted-foreground/50 bg-muted/30' // Visually differentiate trial
             )}
           >
-            <CardHeader>
+            {/* Reduced vertical padding for shorter height */}
+            <CardHeader className="pt-4 pb-2">
               <CardTitle className="text-xl font-semibold">{trialPlan.name}</CardTitle>
               <CardDescription>{trialPlan.description}</CardDescription>
             </CardHeader>
-            <CardContent className="flex-grow space-y-4">
+            {/* Reduced vertical padding and spacing */}
+            <CardContent className="flex-grow space-y-3 py-4">
               <div className="text-3xl font-bold">
                 {trialPlan.price}
               </div>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <ul className="space-y-1.5 text-sm text-muted-foreground"> {/* Reduced space-y */}
                 {trialPlan.features.map((feature, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-gray-500" /> {/* Dimmed check */}
@@ -178,7 +180,8 @@ export default function UpgradePage() {
                 ))}
               </ul>
             </CardContent>
-            <CardFooter>
+            {/* Reduced vertical padding */}
+            <CardFooter className="pt-4 pb-4">
               <Button
                 className="w-full"
                 variant='secondary' // Different variant for trial
@@ -193,3 +196,4 @@ export default function UpgradePage() {
     </div>
   );
 }
+
