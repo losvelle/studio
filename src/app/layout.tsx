@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Home, BarChart, User } from 'lucide-react'; // Removed Bell
 import { NotificationsPanel } from '@/components/notifications-panel'; // Import NotificationsPanel
+import { HeaderContent } from '@/components/header-content'; // Import HeaderContent
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' }); // Define Inter font variable
 
@@ -40,8 +41,10 @@ export default function RootLayout({
                 <span className="font-bold">SignalStream</span>
               </Link>
             </div>
-            {/* Replace static Bell button with NotificationsPanel */}
-            <NotificationsPanel />
+            {/* Use HeaderContent to conditionally render NotificationsPanel */}
+            <HeaderContent>
+              <NotificationsPanel />
+            </HeaderContent>
             {/* Add User menu here later */}
           </div>
         </header>
