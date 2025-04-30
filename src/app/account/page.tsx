@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from '@/components/ui/separator';
-import { LogOut, CreditCard, Bell, ShieldCheck, Mail } from 'lucide-react';
+import { LogOut, CreditCard, Bell, ShieldCheck, Mail, ArrowUpCircle } from 'lucide-react'; // Added ArrowUpCircle
 import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 // Mock user data - replace with actual data fetching
@@ -36,6 +36,10 @@ export default function AccountPage() {
   const handleLogout = () => {
     // TODO: Implement actual logout logic
     console.log('Logout clicked');
+    toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+    });
     // Redirect to login page after logout
     window.location.href = '/login';
   };
@@ -49,6 +53,17 @@ export default function AccountPage() {
     });
     // Example: window.location.href = 'https://billing.example.com';
   };
+
+  const handleUpgradePlan = () => {
+    // TODO: Implement actual upgrade logic (e.g., redirect to pricing/upgrade page)
+    console.log('Upgrade Plan clicked');
+    toast({
+        title: "Upgrade Your Plan",
+        description: "Redirecting to view upgrade options... (Simulation)",
+    });
+    // Example: window.location.href = '/pricing'; // Assuming a pricing page exists
+  };
+
 
   const handleNotificationChange = (type: 'email' | 'push', checked: boolean) => {
     setUser(currentUser => ({
@@ -107,12 +122,14 @@ export default function AccountPage() {
             <span className="font-semibold">{new Date(user.subscription.expiryDate).toLocaleDateString()}</span>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between items-center">
-          <Button variant="outline" size="sm" onClick={handleManageBilling}> {/* Added onClick */}
+        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <Button variant="outline" size="sm" onClick={handleManageBilling}>
             <CreditCard className="mr-2 h-4 w-4"/> Manage Billing
           </Button>
           {!isHighestTier && ( // Show upgrade only if not on the highest tier
-            <Button size="sm">Upgrade Plan</Button>
+            <Button size="sm" onClick={handleUpgradePlan}> {/* Added onClick handler */}
+               <ArrowUpCircle className="mr-2 h-4 w-4" /> Upgrade Plan
+            </Button>
           )}
         </CardFooter>
       </Card>
@@ -164,3 +181,4 @@ export default function AccountPage() {
     </div>
   );
 }
+
