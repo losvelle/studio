@@ -19,6 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 // Define plan details
 const plans = [
   {
+    id: 'trial',
     name: 'Trial',
     price: 'Free',
     priceNumeric: 0,
@@ -31,6 +32,7 @@ const plans = [
     recommended: false,
   },
   {
+    id: 'starter',
     name: 'Starter',
     price: '$119',
     priceNumeric: 119,
@@ -44,6 +46,7 @@ const plans = [
     recommended: false,
   },
   {
+    id: 'professional',
     name: 'Professional',
     price: '$175',
     priceNumeric: 175,
@@ -58,6 +61,7 @@ const plans = [
     recommended: true,
   },
   {
+    id: 'ultimate',
     name: 'Ultimate',
     price: '$420',
     priceNumeric: 420,
@@ -72,6 +76,9 @@ const plans = [
     recommended: false,
   },
 ];
+
+const paidPlans = plans.filter(plan => plan.id !== 'trial');
+const trialPlan = plans.find(plan => plan.id === 'trial');
 
 export default function UpgradePage() {
     const { toast } = useToast();
@@ -95,11 +102,11 @@ export default function UpgradePage() {
         Choose the plan that best fits your trading needs.
       </p>
 
-      {/* Updated grid to display 4 columns horizontally on medium screens and up */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-stretch">
-        {plans.map((plan) => (
+      {/* Paid Plans Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch mb-12">
+        {paidPlans.map((plan) => (
           <Card
-            key={plan.name}
+            key={plan.id}
             className={cn(
               'flex flex-col shadow-lg transition-all duration-300 hover:shadow-xl relative',
               plan.recommended && 'border-2 border-primary shadow-primary/20' // Highlight recommended plan
@@ -108,7 +115,7 @@ export default function UpgradePage() {
              {plan.recommended && (
                 <Badge
                   variant="default" // Or a custom variant
-                  className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground flex items-center gap-1 px-3 py-1"
+                  className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground flex items-center gap-1 px-3 py-1 z-10"
                 >
                   <Star className="h-4 w-4" fill="currentColor" /> Recommended
                 </Badge>
@@ -143,6 +150,46 @@ export default function UpgradePage() {
           </Card>
         ))}
       </div>
+
+      {/* Trial Plan Section */}
+      {trialPlan && (
+        <div className="flex justify-center">
+          <Card
+            key={trialPlan.id}
+            className={cn(
+              'flex flex-col shadow-md transition-all duration-300 hover:shadow-lg relative w-full max-w-md', // Centered and max width
+              'border-dashed border-muted-foreground/50 bg-muted/30' // Visually differentiate trial
+            )}
+          >
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">{trialPlan.name}</CardTitle>
+              <CardDescription>{trialPlan.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-grow space-y-4">
+              <div className="text-3xl font-bold">
+                {trialPlan.price}
+              </div>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                {trialPlan.features.map((feature, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-gray-500" /> {/* Dimmed check */}
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="w-full"
+                variant='secondary' // Different variant for trial
+                onClick={() => handleChoosePlan(trialPlan.name)}
+              >
+                {trialPlan.priceNumeric === 0 ? 'Start Trial' : 'Choose Plan'}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
