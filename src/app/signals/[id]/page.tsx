@@ -38,7 +38,18 @@ export default function SignalDetailsPage() {
 
         if (foundSignal) {
           setSignal(foundSignal);
-          setFormattedTimestamp(format(new Date(foundSignal.timestamp), 'PPpp'));
+          // Format timestamp on client to avoid hydration issues
+           try {
+                const date = new Date(foundSignal.timestamp);
+                if (!isNaN(date.getTime())) {
+                    setFormattedTimestamp(format(date, 'PPpp'));
+                } else {
+                    setFormattedTimestamp('Invalid date');
+                }
+            } catch (e) {
+                console.error("Error formatting date:", e);
+                setFormattedTimestamp("Error");
+            }
         } else {
           setError('Signal not found.');
         }
