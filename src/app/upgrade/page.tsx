@@ -24,7 +24,7 @@ const plans = [
     name: 'Trial',
     price: 'Free',
     priceNumeric: 0,
-    description: 'Explore basic features and get a feel for the platform.',
+    description: 'Explore basic features.', // Shortened description
     features: [
       'Limited Signal Access',
       'Basic Strategy Insights',
@@ -152,49 +152,48 @@ export default function UpgradePage() {
         ))}
       </div>
 
-      {/* Trial Plan Section */}
-      {trialPlan && (
-        <div className="mt-12"> {/* Removed flex justify-center, added margin-top */}
-          <Card
-            key={trialPlan.id}
-            className={cn(
-              'flex flex-col shadow-md transition-all duration-300 hover:shadow-lg relative w-full max-w-3xl mx-auto', // Centered and wider max-width
-              'border-dashed border-muted-foreground/50 bg-muted/30' // Visually differentiate trial
-            )}
-          >
-            {/* Reduced vertical padding for shorter height */}
-            <CardHeader className="py-3"> {/* Reduced padding */}
-              <CardTitle className="text-lg font-semibold">{trialPlan.name}</CardTitle> {/* Smaller title */}
-              <CardDescription className="text-sm">{trialPlan.description}</CardDescription> {/* Slightly smaller description */}
-            </CardHeader>
-            {/* Reduced vertical padding and spacing */}
-            <CardContent className="flex-grow space-y-2 py-3"> {/* Reduced padding & space */}
-              <div className="text-2xl font-bold"> {/* Smaller price font */}
-                {trialPlan.price}
-              </div>
-              <ul className="space-y-1 text-xs text-muted-foreground"> {/* Reduced space-y and font-size */}
-                {trialPlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-1.5"> {/* Reduced gap */}
-                    <Check className="h-3.5 w-3.5 text-gray-500" /> {/* Slightly smaller check */}
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-            {/* Reduced vertical padding */}
-            <CardFooter className="py-3"> {/* Reduced padding */}
-              <Button
-                className="w-full"
-                variant='secondary' // Different variant for trial
-                size="sm" // Smaller button
-                onClick={() => handleChoosePlan(trialPlan.name)}
-              >
-                {trialPlan.priceNumeric === 0 ? 'Start Trial' : 'Choose Plan'}
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      )}
+      {/* Trial Plan Section - Attempting ~100px height with horizontal layout */}
+       {trialPlan && (
+         <div className="mt-12">
+           <Card
+             key={trialPlan.id}
+             className={cn(
+               'shadow-md transition-all duration-300 hover:shadow-lg relative w-full max-w-3xl mx-auto',
+               'border-dashed border-muted-foreground/50 bg-muted/30',
+               'overflow-hidden' // Ensure content doesn't overflow fixed height if applied later
+             )}
+             // style={{ height: '100px' }} // Apply fixed height - CAUTION: might break content
+           >
+             {/* Use flex-row for horizontal layout */}
+             <div className="flex flex-row items-center justify-between p-4 h-[100px]"> {/* Adjust padding and add fixed height */}
+               {/* Left Section: Title & Desc */}
+               <div className="flex-1 mr-4"> {/* Allow shrinking, add margin */}
+                  <CardTitle className="text-base font-semibold">{trialPlan.name}</CardTitle>
+                  <CardDescription className="text-xs mt-1 line-clamp-2">{trialPlan.description}</CardDescription> {/* Limit lines */}
+               </div>
+
+               {/* Middle Section: Price (Optional: Features Count) */}
+               <div className="text-center mx-4 flex-shrink-0"> {/* Prevent shrinking */}
+                  <div className="text-xl font-bold">{trialPlan.price}</div>
+                  {/* <p className="text-xs text-muted-foreground mt-1">{trialPlan.features.length} Features</p> */}
+               </div>
+
+               {/* Right Section: Button */}
+                <div className="ml-4 flex-shrink-0"> {/* Prevent shrinking */}
+                  <Button
+                    variant='secondary'
+                    size="sm"
+                    onClick={() => handleChoosePlan(trialPlan.name)}
+                    className="px-6" // Ensure button has enough width
+                  >
+                    Start Trial
+                  </Button>
+                </div>
+             </div>
+              {/* Removed Header, Content, Footer as elements are now inline */}
+           </Card>
+         </div>
+       )}
     </div>
   );
 }
