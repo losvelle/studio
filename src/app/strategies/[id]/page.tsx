@@ -5,9 +5,26 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { getStrategyById, type TradingStrategy } from '@/services/strategies';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter
+} from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+  DialogClose
+} from "@/components/ui/dialog"; // Import Dialog components
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, TrendingUp, Percent, Gauge, BarChartBig, Tag, Info, Layers, BookOpen, FilePenLine } from 'lucide-react'; // Added FilePenLine icon
+import { ArrowLeft, TrendingUp, Percent, Gauge, BarChartBig, Tag, Info, Layers, BookOpen, FilePenLine, AlertCircle } from 'lucide-react'; // Added FilePenLine icon
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -23,6 +40,7 @@ export default function StrategyDetailsPage() {
   const [strategy, setStrategy] = useState<TradingStrategy | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditLogicDialogOpen, setIsEditLogicDialogOpen] = useState(false); // State for dialog
 
   useEffect(() => {
     async function fetchStrategy() {
@@ -53,13 +71,15 @@ export default function StrategyDetailsPage() {
   }, [strategyId]);
 
   const handleEditLogicClick = () => {
-      // Placeholder for future functionality
+      // Open the dialog instead of just logging and toasting
       console.log('Edit Strategy Logic clicked for:', strategyId);
-      toast({
-          title: "Feature Not Implemented",
-          description: "Editing strategy logic directly is not yet available.",
-          variant: "default", // Use default or a specific variant if you add one for info
-      });
+      setIsEditLogicDialogOpen(true);
+      // Keep the toast for now as extra feedback, can be removed later
+      // toast({
+      //     title: "Edit Strategy Logic",
+      //     description: "Opening strategy editor... (Placeholder)",
+      //     variant: "default",
+      // });
   };
 
 
@@ -100,10 +120,51 @@ export default function StrategyDetailsPage() {
          <Button variant="outline" size="sm" onClick={() => router.back()}>
            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Strategies
          </Button>
-          {/* Button to Edit Strategy Logic (Placeholder) */}
-           <Button variant="secondary" size="sm" onClick={handleEditLogicClick}>
-                <FilePenLine className="mr-2 h-4 w-4" /> Edit Strategy Logic
-            </Button>
+
+          {/* Edit Strategy Logic Dialog Trigger */}
+          <Dialog open={isEditLogicDialogOpen} onOpenChange={setIsEditLogicDialogOpen}>
+              <DialogTrigger asChild>
+                   <Button variant="secondary" size="sm" onClick={handleEditLogicClick}>
+                        <FilePenLine className="mr-2 h-4 w-4" /> Edit Strategy Logic
+                    </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Edit Strategy Logic</DialogTitle>
+                        <DialogDescription>
+                            Modify the parameters and rules for the <span className="font-semibold">{strategy?.name}</span> strategy.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                       {/* Placeholder Content */}
+                       <Alert variant="default" className="bg-blue-50 border-blue-200">
+                           <AlertCircle className="h-4 w-4 text-blue-600" />
+                           <AlertTitle className="text-blue-800">Under Development</AlertTitle>
+                           <AlertDescription className="text-blue-700">
+                               The full strategy logic editor is currently under development.
+                               This section will allow modification of parameters and rules.
+                           </AlertDescription>
+                       </Alert>
+                       <p className="text-sm text-muted-foreground">
+                           For now, you can imagine fields here to adjust settings like:
+                           <ul className="list-disc list-inside mt-2">
+                               <li>Moving Average Periods</li>
+                               <li>RSI Thresholds</li>
+                               <li>Entry/Exit Conditions</li>
+                               <li>Time Filters</li>
+                           </ul>
+                       </p>
+                       {/* Future: <StrategyLogicForm strategy={strategy} onSubmit={handleSaveLogic} /> */}
+                    </div>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button type="button" variant="outline">Cancel</Button>
+                        </DialogClose>
+                        {/* Disable save until form is implemented */}
+                        <Button type="button" disabled>Save Logic Changes</Button>
+                    </DialogFooter>
+              </DialogContent>
+          </Dialog>
        </div>
 
       <Card className="shadow-lg w-full">
@@ -234,4 +295,3 @@ function StrategyDetailsSkeleton() {
     </div>
   );
 }
-
