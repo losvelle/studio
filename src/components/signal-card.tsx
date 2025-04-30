@@ -1,4 +1,7 @@
+'use client';
+
 import type { TradingSignal } from '@/services/trading-signals';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -21,6 +24,15 @@ export function SignalCard({ signal }: SignalCardProps) {
   const directionColor = isBuy ? 'text-green-600' : 'text-red-600';
   const directionBg = isBuy ? 'bg-green-100' : 'bg-red-100';
   const DirectionIcon = isBuy ? ArrowUpRight : ArrowDownLeft;
+
+  // State to hold the formatted timestamp, initialized to null
+  const [formattedTimestamp, setFormattedTimestamp] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Format the timestamp only on the client side after the component mounts
+    // This prevents the hydration mismatch caused by server/client timezone/locale differences
+    setFormattedTimestamp(format(new Date(signal.timestamp), 'PPpp'));
+  }, [signal.timestamp]); // Dependency array ensures this runs if the timestamp changes
 
   return (
     <Card className="shadow-md hover:shadow-lg transition-shadow duration-200 w-full">
@@ -65,7 +77,8 @@ export function SignalCard({ signal }: SignalCardProps) {
       <CardFooter className="text-xs text-muted-foreground pt-3 border-t">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
-          <span>{format(new Date(signal.timestamp), 'PPpp')}</span>
+          {/* Render the formatted timestamp only when the state is updated on the client */}
+          <span>{formattedTimestamp}</span>
         </div>
       </CardFooter>
     </Card>
