@@ -1,6 +1,7 @@
+
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react'; // Import useState
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,14 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from '@/components/ui/separator';
 import { LogOut, CreditCard, Bell, ShieldCheck, Mail } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 // Mock user data - replace with actual data fetching
-const user = {
+const initialUser = {
   name: "Jane Doe",
   email: "jane.doe@example.com",
   avatarUrl: "https://picsum.photos/100/100", // Placeholder image
   subscription: {
-    plan: "Premium",
+    plan: "Professional", // Updated plan
     expiryDate: "2024-12-31",
   },
   notificationPreferences: {
@@ -24,13 +26,46 @@ const user = {
   },
 };
 
+// Define the subscription tiers
+const subscriptionTiers = ["Trial", "Starter", "Professional", "Ultimate"];
+
 export default function AccountPage() {
+  const { toast } = useToast(); // Initialize toast
+  const [user, setUser] = useState(initialUser); // Use state for user data
+
   const handleLogout = () => {
     // TODO: Implement actual logout logic
     console.log('Logout clicked');
-     // Redirect to login page after logout
-     window.location.href = '/login';
+    // Redirect to login page after logout
+    window.location.href = '/login';
   };
+
+  const handleManageBilling = () => {
+    // TODO: Implement actual billing management logic (e.g., redirect to Stripe portal)
+    console.log('Manage Billing clicked');
+    toast({
+      title: "Billing Management",
+      description: "Redirecting to billing portal... (Simulation)",
+    });
+    // Example: window.location.href = 'https://billing.example.com';
+  };
+
+  const handleNotificationChange = (type: 'email' | 'push', checked: boolean) => {
+    setUser(currentUser => ({
+      ...currentUser,
+      notificationPreferences: {
+        ...currentUser.notificationPreferences,
+        [type]: checked,
+      },
+    }));
+    console.log(`Notification preference changed: ${type} = ${checked}`);
+    toast({
+      title: "Preferences Updated",
+      description: `${type.charAt(0).toUpperCase() + type.slice(1)} notifications ${checked ? 'enabled' : 'disabled'}.`,
+    });
+  };
+
+  const isHighestTier = user.subscription.plan === "Ultimate";
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-2xl">
@@ -73,8 +108,10 @@ export default function AccountPage() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between items-center">
-          <Button variant="outline" size="sm"><CreditCard className="mr-2 h-4 w-4"/> Manage Billing</Button>
-          {user.subscription.plan !== 'Premium' && ( // Show upgrade only if not premium
+          <Button variant="outline" size="sm" onClick={handleManageBilling}> {/* Added onClick */}
+            <CreditCard className="mr-2 h-4 w-4"/> Manage Billing
+          </Button>
+          {!isHighestTier && ( // Show upgrade only if not on the highest tier
             <Button size="sm">Upgrade Plan</Button>
           )}
         </CardFooter>
@@ -97,7 +134,7 @@ export default function AccountPage() {
             <Switch
               id="email-notifications"
               checked={user.notificationPreferences.email}
-              // onCheckedChange={(checked) => handleNotificationChange('email', checked)} // Add handler later
+              onCheckedChange={(checked) => handleNotificationChange('email', checked)} // Add handler
             />
           </div>
           <Separator />
@@ -111,8 +148,8 @@ export default function AccountPage() {
             <Switch
               id="push-notifications"
               checked={user.notificationPreferences.push}
-               // onCheckedChange={(checked) => handleNotificationChange('push', checked)} // Add handler later
-               disabled // Disable if mobile app integration isn't ready
+              onCheckedChange={(checked) => handleNotificationChange('push', checked)} // Add handler
+              disabled // Keep disabled if mobile app integration isn't ready
             />
           </div>
         </CardContent>
