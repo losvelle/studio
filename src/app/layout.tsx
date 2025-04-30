@@ -1,21 +1,14 @@
+
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import { Toaster } from '@/components/ui/toaster'; // Import Toaster
+import { Inter } from 'next/font/google'; // Use Inter font
+import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { Home, BarChart, User, Bell } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Home, BarChart, User } from 'lucide-react'; // Removed Bell
+import { NotificationsPanel } from '@/components/notifications-panel'; // Import NotificationsPanel
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' }); // Define Inter font variable
 
 export const metadata: Metadata = {
   title: 'SignalStream',
@@ -30,16 +23,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        suppressHydrationWarning // Add suppressHydrationWarning here as error points to body
+        // Removed suppressHydrationWarning from body as it's better on html
         className={cn(
-          geistSans.variable,
-          geistMono.variable,
-          'antialiased font-sans flex flex-col min-h-screen' // Use sans font by default, ensure body takes full height
+          inter.variable, // Use Inter font variable
+          'antialiased font-sans flex flex-col min-h-screen bg-background' // Apply background color here
         )}
       >
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container flex h-14 items-center justify-between">
-            <div className="mr-4 flex items-center"> {/* Changed justify-between to items-center */}
+            <div className="mr-4 flex items-center">
               <Link className="mr-6 flex items-center space-x-2" href="/">
                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-primary">
                     <path d="M2 12h3m5 0h3m5 0h3"/>
@@ -48,11 +40,8 @@ export default function RootLayout({
                 <span className="font-bold">SignalStream</span>
               </Link>
             </div>
-            {/* Notifications Icon */}
-             <Button variant="ghost" size="icon">
-               <Bell className="h-5 w-5" />
-               <span className="sr-only">Notifications</span>
-             </Button>
+            {/* Replace static Bell button with NotificationsPanel */}
+            <NotificationsPanel />
             {/* Add User menu here later */}
           </div>
         </header>
