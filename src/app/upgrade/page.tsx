@@ -163,29 +163,30 @@ export default function UpgradePage() {
             )}
           >
             {/* Reduced vertical padding for shorter height */}
-            <CardHeader className="pt-4 pb-2"> {/* Reduced padding */}
-              <CardTitle className="text-xl font-semibold">{trialPlan.name}</CardTitle>
-              <CardDescription>{trialPlan.description}</CardDescription>
+            <CardHeader className="py-3"> {/* Reduced padding */}
+              <CardTitle className="text-lg font-semibold">{trialPlan.name}</CardTitle> {/* Smaller title */}
+              <CardDescription className="text-sm">{trialPlan.description}</CardDescription> {/* Slightly smaller description */}
             </CardHeader>
             {/* Reduced vertical padding and spacing */}
-            <CardContent className="flex-grow space-y-3 py-4"> {/* Reduced padding & space */}
-              <div className="text-3xl font-bold">
+            <CardContent className="flex-grow space-y-2 py-3"> {/* Reduced padding & space */}
+              <div className="text-2xl font-bold"> {/* Smaller price font */}
                 {trialPlan.price}
               </div>
-              <ul className="space-y-1.5 text-sm text-muted-foreground"> {/* Reduced space-y */}
+              <ul className="space-y-1 text-xs text-muted-foreground"> {/* Reduced space-y and font-size */}
                 {trialPlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-gray-500" /> {/* Dimmed check */}
+                  <li key={index} className="flex items-center gap-1.5"> {/* Reduced gap */}
+                    <Check className="h-3.5 w-3.5 text-gray-500" /> {/* Slightly smaller check */}
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
             </CardContent>
             {/* Reduced vertical padding */}
-            <CardFooter className="pt-4 pb-4"> {/* Reduced padding */}
+            <CardFooter className="py-3"> {/* Reduced padding */}
               <Button
                 className="w-full"
                 variant='secondary' // Different variant for trial
+                size="sm" // Smaller button
                 onClick={() => handleChoosePlan(trialPlan.name)}
               >
                 {trialPlan.priceNumeric === 0 ? 'Start Trial' : 'Choose Plan'}
