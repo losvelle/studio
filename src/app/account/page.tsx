@@ -6,9 +6,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input"; // Import Input
 import { Switch } from "@/components/ui/switch";
 import { Separator } from '@/components/ui/separator';
-import { LogOut, CreditCard, Bell, ShieldCheck, Mail, ArrowUpCircle } from 'lucide-react'; // Added ArrowUpCircle
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription, // Import Description
+  DialogFooter,
+  DialogTrigger,
+  DialogClose // Import Close
+} from "@/components/ui/dialog"; // Import Dialog components
+import { LogOut, CreditCard, Bell, ShieldCheck, Mail, ArrowUpCircle, Edit } from 'lucide-react'; // Added Edit icon
 import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 // Mock user data - replace with actual data fetching
@@ -32,6 +43,10 @@ const subscriptionTiers = ["Trial", "Starter", "Professional", "Ultimate"];
 export default function AccountPage() {
   const { toast } = useToast(); // Initialize toast
   const [user, setUser] = useState(initialUser); // Use state for user data
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editedName, setEditedName] = useState(user.name);
+  const [editedEmail, setEditedEmail] = useState(user.email);
+
 
   const handleLogout = () => {
     // TODO: Implement actual logout logic
@@ -80,6 +95,28 @@ export default function AccountPage() {
     });
   };
 
+  const handleProfileUpdate = (event: React.FormEvent) => {
+      event.preventDefault(); // Prevent default form submission
+      setUser(currentUser => ({
+          ...currentUser,
+          name: editedName,
+          email: editedEmail,
+      }));
+      setIsEditModalOpen(false); // Close the modal
+      toast({
+          title: "Profile Updated",
+          description: "Your name and email have been successfully updated.",
+      });
+      console.log('Profile updated:', { name: editedName, email: editedEmail });
+  };
+
+  // Function to reset edit form fields when dialog opens
+  const handleOpenEditModal = () => {
+      setEditedName(user.name);
+      setEditedEmail(user.email);
+      setIsEditModalOpen(true);
+  }
+
   const isHighestTier = user.subscription.plan === "Ultimate";
 
   return (
@@ -88,22 +125,72 @@ export default function AccountPage() {
 
       {/* User Information */}
       <Card className="mb-8 shadow-md">
-        <CardHeader className="flex flex-row items-center gap-4">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src={user.avatarUrl} alt={user.name} />
-            <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-          </Avatar>
-          <div>
-            <CardTitle className="text-xl">{user.name}</CardTitle>
-            <CardDescription className="flex items-center gap-1 text-muted-foreground">
-                <Mail className="h-4 w-4"/> {user.email}
-            </CardDescription>
-          </div>
+        <CardHeader className="flex flex-row items-center justify-between gap-4"> {/* Added justify-between */}
+           <div className="flex items-center gap-4"> {/* Wrapper for avatar and text */}
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={user.avatarUrl} alt={user.name} />
+                <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+              <div>
+                <CardTitle className="text-xl">{user.name}</CardTitle>
+                <CardDescription className="flex items-center gap-1 text-muted-foreground">
+                    <Mail className="h-4 w-4"/> {user.email}
+                </CardDescription>
+              </div>
+           </div>
+            {/* Edit Profile Button/Dialog Trigger */}
+             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={handleOpenEditModal}>
+                        <Edit className="h-5 w-5" />
+                        <span className="sr-only">Edit Profile</span>
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Edit Profile</DialogTitle>
+                        <DialogDescription>
+                            Make changes to your profile here. Click save when you're done.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleProfileUpdate}>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="name" className="text-right">
+                                    Name
+                                </Label>
+                                <Input
+                                    id="name"
+                                    value={editedName}
+                                    onChange={(e) => setEditedName(e.target.value)}
+                                    className="col-span-3"
+                                    required
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="email" className="text-right">
+                                    Email
+                                </Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={editedEmail}
+                                    onChange={(e) => setEditedEmail(e.target.value)}
+                                    className="col-span-3"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                             <DialogClose asChild>
+                                <Button type="button" variant="outline">Cancel</Button>
+                             </DialogClose>
+                             <Button type="submit">Save changes</Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </CardHeader>
-         {/* Optional: Add button to edit profile */}
-         {/* <CardFooter>
-            <Button variant="outline" size="sm">Edit Profile</Button>
-         </CardFooter> */}
       </Card>
 
       {/* Subscription Details */}
@@ -127,7 +214,7 @@ export default function AccountPage() {
             <CreditCard className="mr-2 h-4 w-4"/> Manage Billing
           </Button>
           {!isHighestTier && ( // Show upgrade only if not on the highest tier
-            <Button size="sm" onClick={handleUpgradePlan}> {/* Added onClick handler */}
+            <Button size="sm" onClick={handleUpgradePlan}>
                <ArrowUpCircle className="mr-2 h-4 w-4" /> Upgrade Plan
             </Button>
           )}
@@ -181,4 +268,3 @@ export default function AccountPage() {
     </div>
   );
 }
-
