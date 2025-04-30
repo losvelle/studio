@@ -1,0 +1,129 @@
+'use client';
+
+import React from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from '@/components/ui/separator';
+import { LogOut, CreditCard, Bell, ShieldCheck, Mail } from 'lucide-react';
+
+// Mock user data - replace with actual data fetching
+const user = {
+  name: "Jane Doe",
+  email: "jane.doe@example.com",
+  avatarUrl: "https://picsum.photos/100/100", // Placeholder image
+  subscription: {
+    plan: "Premium",
+    expiryDate: "2024-12-31",
+  },
+  notificationPreferences: {
+    email: true,
+    push: false,
+  },
+};
+
+export default function AccountPage() {
+  const handleLogout = () => {
+    // TODO: Implement actual logout logic
+    console.log('Logout clicked');
+     // Redirect to login page after logout
+     window.location.href = '/login';
+  };
+
+  return (
+    <div className="container mx-auto py-8 px-4 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-8 text-primary">Account Settings</h1>
+
+      {/* User Information */}
+      <Card className="mb-8 shadow-md">
+        <CardHeader className="flex flex-row items-center gap-4">
+          <Avatar className="h-16 w-16">
+            <AvatarImage src={user.avatarUrl} alt={user.name} />
+            <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+          </Avatar>
+          <div>
+            <CardTitle className="text-xl">{user.name}</CardTitle>
+            <CardDescription className="flex items-center gap-1 text-muted-foreground">
+                <Mail className="h-4 w-4"/> {user.email}
+            </CardDescription>
+          </div>
+        </CardHeader>
+         {/* Optional: Add button to edit profile */}
+         {/* <CardFooter>
+            <Button variant="outline" size="sm">Edit Profile</Button>
+         </CardFooter> */}
+      </Card>
+
+      {/* Subscription Details */}
+      <Card className="mb-8 shadow-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-primary"/> Subscription</CardTitle>
+          <CardDescription>Manage your current plan and billing.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Current Plan:</span>
+            <span className="font-semibold">{user.subscription.plan}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Renews On:</span>
+            <span className="font-semibold">{new Date(user.subscription.expiryDate).toLocaleDateString()}</span>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between items-center">
+          <Button variant="outline" size="sm"><CreditCard className="mr-2 h-4 w-4"/> Manage Billing</Button>
+          {user.subscription.plan !== 'Premium' && ( // Show upgrade only if not premium
+            <Button size="sm">Upgrade Plan</Button>
+          )}
+        </CardFooter>
+      </Card>
+
+      {/* Settings */}
+      <Card className="mb-8 shadow-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Bell className="h-5 w-5 text-primary"/> Notification Preferences</CardTitle>
+          <CardDescription>Choose how you receive signal alerts.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="email-notifications" className="flex flex-col space-y-1">
+              <span>Email Notifications</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Receive new signal alerts via email.
+              </span>
+            </Label>
+            <Switch
+              id="email-notifications"
+              checked={user.notificationPreferences.email}
+              // onCheckedChange={(checked) => handleNotificationChange('email', checked)} // Add handler later
+            />
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <Label htmlFor="push-notifications" className="flex flex-col space-y-1">
+              <span>Push Notifications</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Get real-time alerts on your mobile device (requires app install).
+              </span>
+            </Label>
+            <Switch
+              id="push-notifications"
+              checked={user.notificationPreferences.push}
+               // onCheckedChange={(checked) => handleNotificationChange('push', checked)} // Add handler later
+               disabled // Disable if mobile app integration isn't ready
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Logout Button */}
+      <div className="mt-12 flex justify-center">
+        <Button variant="destructive" onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" /> Logout
+        </Button>
+      </div>
+    </div>
+  );
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import type { TradingSignal } from '@/services/trading-signals';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { SignalCard } from './signal-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,28 +13,58 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { DatePicker } from '@/components/ui/date-picker'; // Assuming a DatePicker component exists
-import { FilterX } from 'lucide-react';
+import { DatePicker } from '@/components/ui/date-picker';
+import { FilterX, Loader2 } from 'lucide-react';
+import Link from 'next/link'; // Import Link
+import { getTradingSignals } from '@/services/trading-signals'; // Import fetch function
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
 
-interface SignalHistoryProps {
-  signals: TradingSignal[];
-}
 
-export function SignalHistory({ signals }: SignalHistoryProps) {
-  const [assetFilter, setAssetFilter] = useState<string>('all');
-  const [strategyFilter, setStrategyFilter] = useState<string>('all');
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+// Renamed from SignalHistoryProps to FullSignalHistoryProps
+// interface FullSignalHistoryProps {
+//   signals: TradingSignal[]; // This will now be fetched client-side
+// }
+
+// Renamed from SignalHistory to FullSignalHistory
+export function FullSignalHistory() {
+   const [signals, setSignals] = useState<TradingSignal[]>([]);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
+
+   const [assetFilter, setAssetFilter] = useState<string>('all');
+   const [strategyFilter, setStrategyFilter] = useState<string>('all');
+   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
+   // Fetch signals on component mount
+   useEffect(() => {
+     async function fetchSignals() {
+       setLoading(true);
+       setError(null);
+       try {
+         const fetchedSignals = await getTradingSignals();
+         setSignals(fetchedSignals);
+       } catch (e) {
+         console.error("Failed to fetch trading signals:", e);
+         setError("Could not load signal history. Please try again later.");
+       } finally {
+         setLoading(false);
+       }
+     }
+     fetchSignals();
+   }, []); // Empty dependency array ensures this runs only once on mount
+
 
   // Extract unique assets and strategies for filter dropdowns
   const uniqueAssets = useMemo(() => {
     const assets = new Set(signals.map(s => s.asset));
-    return ['all', ...Array.from(assets)];
+    return ['all', ...Array.from(assets).sort()]; // Sort alphabetically
   }, [signals]);
 
   const uniqueStrategies = useMemo(() => {
     const strategies = new Set(signals.map(s => s.strategyId));
-    return ['all', ...Array.from(strategies)];
+    return ['all', ...Array.from(strategies).sort()]; // Sort alphabetically
   }, [signals]);
 
 
@@ -49,7 +79,7 @@ export function SignalHistory({ signals }: SignalHistoryProps) {
 
 
       return isAssetMatch && isStrategyMatch && isStartDateMatch && isEndDateMatch;
-    }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()); // Sort by newest first
+    }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()); // Keep sorted by newest first
   }, [signals, assetFilter, strategyFilter, startDate, endDate]);
 
   const clearFilters = () => {
@@ -59,12 +89,33 @@ export function SignalHistory({ signals }: SignalHistoryProps) {
     setEndDate(undefined);
   };
 
+   if (loading) {
+     return (
+       <div className="flex justify-center items-center min-h-[calc(100vh-112px)]">
+         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+         <span className="ml-2 text-muted-foreground">Loading History...</span>
+       </div>
+     );
+   }
+
+   if (error) {
+     return (
+       <div className="container mx-auto py-8 px-4">
+         <Alert variant="destructive" className="mb-6">
+           <Terminal className="h-4 w-4" />
+           <AlertTitle>Error</AlertTitle>
+           <AlertDescription>{error}</AlertDescription>
+         </Alert>
+       </div>
+     );
+   }
+
   return (
     <div className="container mx-auto py-8 px-4">
-      <h2 className="text-2xl font-semibold mb-6 text-primary">Signal History</h2>
+      <h1 className="text-3xl font-bold mb-8 text-primary">Full Signal History</h1>
 
       {/* Filtering Controls */}
-      <div className="mb-8 p-4 bg-card rounded-lg shadow grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+      <div className="mb-8 p-4 bg-card rounded-lg shadow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
         <div>
           <Label htmlFor="asset-filter">Filter by Asset</Label>
            <Select value={assetFilter} onValueChange={setAssetFilter}>
@@ -111,12 +162,14 @@ export function SignalHistory({ signals }: SignalHistoryProps) {
       {filteredSignals.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredSignals.map((signal, index) => (
-            // Using timestamp and index as key for potential duplicate signals at same time
-            <SignalCard key={`${signal.timestamp}-${index}`} signal={signal} />
+             // Wrap SignalCard with Link to its detail page
+             <Link key={`${signal.timestamp}-${index}`} href={`/signals/${encodeURIComponent(signal.timestamp)}`} className="block hover:opacity-90 transition-opacity">
+                 <SignalCard signal={signal} />
+            </Link>
           ))}
         </div>
       ) : (
-        <div className="text-center py-10 text-muted-foreground">
+        <div className="text-center py-10 text-muted-foreground bg-card rounded-lg shadow-sm">
           No signals match the current filters.
         </div>
       )}
